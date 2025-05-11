@@ -13,5 +13,6 @@ struct TouchyVolumesApp: App {
         WindowGroup {
             ContentView()
         }
+        .windowStyle(.volumetric)
     }
 }

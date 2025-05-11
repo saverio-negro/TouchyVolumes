@@ -1,0 +1,253 @@
+#usda 1.0
+(
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Root"
+{
+    reorder nameChildren = ["Sphere", "Pulse_Modifier"]
+    rel material:binding = None (
+        bindMaterialAs = "weakerThanDescendants"
+    )
+
+    def Sphere "Sphere" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </Root/Pulse_Modifier> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        double radius = 0.05
+        quatf xformOp:orient = (1, 0, 0, 0)
+        float3 xformOp:scale = (1, 1, 1)
+        float3 xformOp:translate = (0, 0, 0.0004)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (0.2, 0.2, 0.2)
+                float radius = 0.05
+                token shapeType = "Sphere"
+            }
+        }
+
+        def RealityKitComponent "InputTarget"
+        {
+            uniform token info:id = "RealityKit.InputTarget"
+        }
+    }
+
+    def Material "Pulse_Modifier"
+    {
+        float inputs:MaximumSize = 0 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-905.7478, 418.81497)
+                    int stackingOrderInSubgraph = 321
+                }
+            }
+        )
+        float inputs:Speed = 0.5 (
+            customData = {
+                dictionary realitykit = {
+                    float2 positionInSubgraph = (-1208.0674, 184.54369)
+                    int stackingOrderInSubgraph = 301
+                }
+            }
+        )
+        token outputs:mtlx:surface.connect = </Root/Pulse_Modifier/PreviewSurface.outputs:out>
+        token outputs:realitykit:vertex.connect = </Root/Pulse_Modifier/GeometryModifier.outputs:out>
+        float2 ui:nodegraph:realitykit:subgraphOutputs:pos = (335.25, 100.5)
+
+        def Shader "PreviewSurface"
+        {
+            uniform token info:id = "ND_UsdPreviewSurface_surfaceshader"
+            float inputs:clearcoatRoughness = 0
+            color3f inputs:diffuseColor = (0.9484247, 0.48336825, 0) (
+                colorSpace = "srgb_displayp3"
+            )
+            color3f inputs:emissiveColor = (0.5710425, 0.31474602, 0) (
+                colorSpace = "srgb_displayp3"
+            )
+            float inputs:ior = 0
+            float inputs:metallic
+            float3 inputs:normal.connect = </Root/Pulse_Modifier/Fractal3D.outputs:out>
+            float inputs:opacity
+            float inputs:roughness = 0.2
+            float inputs:roughness.connect = </Root/Pulse_Modifier/Multiply_2.outputs:out>
+            token outputs:out
+            float2 ui:nodegraph:node:pos = (11.1841345, -224.24)
+            int ui:nodegraph:node:stackingOrder = 446
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["Advanced"]
+        }
+
+        def Shader "Time"
+        {
+            uniform token info:id = "ND_time_float"
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-1205.7588, 95.41087)
+            int ui:nodegraph:node:stackingOrder = 301
+        }
+
+        def Shader "Multiply"
+        {
+            uniform token info:id = "ND_multiply_float"
+            float inputs:in1.connect = </Root/Pulse_Modifier/Time.outputs:out>
+            float inputs:in2.connect = </Root/Pulse_Modifier.inputs:Speed>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-1052.544, 145.29759)
+            int ui:nodegraph:node:stackingOrder = 301
+        }
+
+        def Shader "Sin"
+        {
+            uniform token info:id = "ND_sin_float"
+            float inputs:in.connect = </Root/Pulse_Modifier/Multiply.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-918.54395, 61.254627)
+            int ui:nodegraph:node:stackingOrder = 301
+        }
+
+        def Shader "Remap"
+        {
+            uniform token info:id = "ND_remap_float"
+            float inputs:in.connect = </Root/Pulse_Modifier/Sin.outputs:out>
+            float inputs:inhigh
+            float inputs:inlow = -1
+            float inputs:outhigh.connect = </Root/Pulse_Modifier.inputs:MaximumSize>
+            float inputs:outlow
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-711.7014, 274.49185)
+            int ui:nodegraph:node:stackingOrder = 319
+        }
+
+        def Shader "GeometryModifier"
+        {
+            uniform token info:id = "ND_realitykit_geometrymodifier_2_0_vertexshader"
+            color4f inputs:color
+            float3 inputs:modelPositionOffset.connect = </Root/Pulse_Modifier/Multiply_1.outputs:out>
+            float3 inputs:normal
+            token outputs:out
+            float2 ui:nodegraph:node:pos = (24.939272, 264.0587)
+            int ui:nodegraph:node:stackingOrder = 442
+        }
+
+        def Shader "Position"
+        {
+            uniform token info:id = "ND_position_vector3"
+            string inputs:space
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-529.81946, 203.09267)
+            int ui:nodegraph:node:stackingOrder = 325
+            string[] ui:nodegraph:realitykit:node:attributesShowingChildren = ["inputs:space"]
+        }
+
+        def Shader "Multiply_1"
+        {
+            uniform token info:id = "ND_multiply_vector3"
+            float3 inputs:in1.connect = </Root/Pulse_Modifier/Position.outputs:out>
+            float3 inputs:in2.connect = </Root/Pulse_Modifier/Combine3.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-316.10364, 338.39142)
+            int ui:nodegraph:node:stackingOrder = 327
+        }
+
+        def Shader "Combine3"
+        {
+            uniform token info:id = "ND_combine3_vector3"
+            prepend float inputs:in1.connect = </Root/Pulse_Modifier/Remap.outputs:out>
+            prepend float inputs:in2.connect = </Root/Pulse_Modifier/Remap.outputs:out>
+            prepend float inputs:in3.connect = </Root/Pulse_Modifier/Remap.outputs:out>
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-523.10614, 438.63083)
+            int ui:nodegraph:node:stackingOrder = 323
+        }
+
+        def Shader "Fractal3D"
+        {
+            uniform token info:id = "ND_fractal3d_vector3"
+            float3 inputs:amplitude
+            float inputs:diminish = 1
+            float inputs:diminish.connect = </Root/Pulse_Modifier/Cos.outputs:out>
+            float inputs:lacunarity = 0
+            float inputs:lacunarity.connect = </Root/Pulse_Modifier/Remap_1.outputs:out>
+            int inputs:octaves
+            float3 inputs:position
+            float3 outputs:out
+            float2 ui:nodegraph:node:pos = (-270.78525, -96.11256)
+            int ui:nodegraph:node:stackingOrder = 444
+        }
+
+        def Shader "Remap_1"
+        {
+            uniform token info:id = "ND_remap_float"
+            float inputs:in.connect = </Root/Pulse_Modifier/Sin.outputs:out>
+            float inputs:inlow = -1
+            float inputs:outhigh = -12
+            float inputs:outlow = -8
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-691.0039, -37.91227)
+            int ui:nodegraph:node:stackingOrder = 429
+        }
+
+        def Shader "Time_1"
+        {
+            uniform token info:id = "ND_time_float"
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-1206.4662, -64.56365)
+            int ui:nodegraph:node:stackingOrder = 413
+        }
+
+        def Shader "Cos"
+        {
+            uniform token info:id = "ND_cos_float"
+            float inputs:in.connect = </Root/Pulse_Modifier/Divide.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-902.03265, -251.78438)
+            int ui:nodegraph:node:stackingOrder = 425
+        }
+
+        def Shader "Remap_2"
+        {
+            uniform token info:id = "ND_remap_float"
+            float inputs:in.connect = </Root/Pulse_Modifier/Cos.outputs:out>
+            float inputs:inlow = -1
+            float inputs:outhigh = 6
+            float inputs:outlow = 4
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-694.44763, -375.34885)
+            int ui:nodegraph:node:stackingOrder = 448
+        }
+
+        def Shader "Divide"
+        {
+            uniform token info:id = "ND_divide_float"
+            float inputs:in1.connect = </Root/Pulse_Modifier/Time_1.outputs:out>
+            float inputs:in2 = 10
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-1050.0687, -167.29051)
+            int ui:nodegraph:node:stackingOrder = 426
+        }
+
+        def Shader "Multiply_2"
+        {
+            uniform token info:id = "ND_multiply_float"
+            float inputs:in1.connect = </Root/Pulse_Modifier/Remap_2.outputs:out>
+            float inputs:in2.connect = </Root/Pulse_Modifier/Remap_1.outputs:out>
+            float outputs:out
+            float2 ui:nodegraph:node:pos = (-278.65475, -378.74338)
+            int ui:nodegraph:node:stackingOrder = 440
+        }
+    }
+}
+
