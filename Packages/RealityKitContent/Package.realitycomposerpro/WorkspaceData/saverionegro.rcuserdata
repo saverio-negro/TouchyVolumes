@@ -1,10 +1,13 @@
 {
   "advancedEditorSelectedIdentifier" : "ProjectBrowser",
   "openSceneRelativePaths" : [
-    "Scene.usda"
+    "Sun.usda"
   ],
   "recentIdentifiers" : {
     "26DBAE76-5DD8-47B6-A085-1B4ADA111097" : [
+
+    ],
+    "6B4BA619-EB41-43C6-BDA4-1C8DC775F9D8" : [
 
     ]
   },
@@ -230,9 +233,34 @@
           1
         ]
       }
+    ],
+    "6B4BA619-EB41-43C6-BDA4-1C8DC775F9D8" : [
+      {
+        "date" : 768778817.909364,
+        "title" : "Untitled",
+        "transform" : [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0.7071069,
+          -0.70710677,
+          0,
+          0,
+          0.70710677,
+          0.7071069,
+          0,
+          0,
+          0.58674914,
+          0.58674926,
+          1
+        ]
+      }
     ]
   },
   "sceneViewportBackgroundColors" : {
 
-  }
+  },
+  "selectedSceneRelativePath" : "Sun.usda"
 }
