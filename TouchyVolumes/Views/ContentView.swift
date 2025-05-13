@@ -24,6 +24,7 @@ struct ContentView: View {
     @State private var moonDragLastLocation: CGPoint = .zero
     @State private var viewRotationY: Angle = .zero
     @State private var viewDragLastLocation: CGPoint = .zero
+    @GestureState private var magnification: CGFloat = .zero
     
     var body: some View {
         RealityView { content in
@@ -58,13 +59,7 @@ struct ContentView: View {
             }
             
         } update: { content in
-            Task {
-                if sunAnimated {
-                    
-                } else {
-                    
-                }
-            }
+            // Update content
         }
         .gesture(
             TapGesture()
@@ -151,6 +146,20 @@ struct ContentView: View {
                     }
                     
                     viewDragLastLocation = value.location
+                }
+        )
+        .gesture(
+            MagnifyGesture()
+                .targetedToEntity(moon)
+                .onChanged { value in
+                    
+                    let magnificationFactor = Float(value.magnification)
+                    
+                    moon.transform.scale = SIMD3<Float>(
+                        magnificationFactor,
+                        magnificationFactor,
+                        magnificationFactor
+                    )
                 }
         )
         .rotation3DEffect(viewRotationY, axis: (x: 0, y: 1, z: 0))
