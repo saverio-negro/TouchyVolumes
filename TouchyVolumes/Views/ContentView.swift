@@ -24,7 +24,7 @@ struct ContentView: View {
     @State private var moonDragLastLocation: CGPoint = .zero
     @State private var viewRotationY: Angle = .zero
     @State private var viewDragLastLocation: CGPoint = .zero
-    @GestureState private var magnification: CGFloat = .zero
+    @GestureState private var addPlanet: Bool = false
     
     var body: some View {
         RealityView { content in
@@ -60,6 +60,9 @@ struct ContentView: View {
             
         } update: { content in
             // Update content
+            if addPlanet {
+                addRandomPlanet(content: content)
+            }
         }
         .gesture(
             TapGesture()
@@ -162,7 +165,40 @@ struct ContentView: View {
                     )
                 }
         )
+        .gesture(
+            LongPressGesture(minimumDuration: 1.0, maximumDistance: 100)
+                .targetedToAnyEntity()
+                .updating($addPlanet) { value, gestureState, transaction in
+                    gestureState = value.gestureValue
+                }
+        )
         .rotation3DEffect(viewRotationY, axis: (x: 0, y: 1, z: 0))
+    }
+    
+    private func getRandomColor() -> UIColor {
+        let red = CGFloat.random(in: 0...1)
+        let green = CGFloat.random(in: 0...1)
+        let blue = CGFloat.random(in: 0...1)
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
+    }
+    
+    private func addRandomPlanet(content: RealityViewContent) {
+        let randomRadius = Float.random(in: 0.007...0.04)
+        let sphere = ModelEntity(mesh: .generateSphere(radius: randomRadius))
+        
+        let randomRoughness = Float.random(in: 0...1)
+        let material = SimpleMaterial(
+            color: getRandomColor(),
+            roughness: MaterialScalarParameter.float(randomRoughness),
+            isMetallic: Bool.random()
+        )
+        sphere.model?.materials = [material]
+        sphere.position.x = Float.random(in: -0.4...0.4)
+        sphere.position.y = Float.random(in: -0.4...0.4)
+        sphere.position.z = Float.random(in: 0.1...0.4)
+        sphere.generateCollisionShapes(recursive: true)
+        sphere.components.set(InputTargetComponent())
+        content.add(sphere)
     }
     
     private func scaleEntity(entity: Entity) {
